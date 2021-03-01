@@ -5,7 +5,7 @@ export const addLocalStorage = (key, value) => {
 };
 
 export const getLocalStorage = (key) => {
-  storage.getItem(key);
+  return storage.getItem(key);
 };
 
 export const removeItem = (key) => {
