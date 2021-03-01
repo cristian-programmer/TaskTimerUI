@@ -1,19 +1,36 @@
 import React, { useState, useEffect } from "react";
 
-import { get } from "./../http/http";
+import { get, patch } from "./../http/http";
 import { getLocalStorage } from "../http/localStorage";
-import { Select, Row, Col, Typography } from "antd";
+import { Select, Row, Col, Typography, Button, message } from "antd";
 
 const { Option } = Select;
 const { Text } = Typography;
 
 const AssignTime = ({ time }) => {
   const [tasks, setTasks] = useState([]);
+  const [idTask, setIdTask] = useState("");
+  const addTimeToTask = async () => {
+    console.log(time, " ", idTask);
+    try {
+      const res = await patch(`/v1/tasks/${idTask}`, time);
+      if (res.updated === "updated") {
+        message.success("Se ha añadido el tiempo tomado a la tarea");
+      }
+    } catch (error) {
+      message.error("Error: ", error);
+    }
+  };
+
+  const handleOption = (value) => {
+    setIdTask(value);
+  };
+
   useEffect(() => {
     const idUser = getLocalStorage("idUser");
     get(`/v1/tasks/user/${idUser}`)
       .then((res) => {
-        if (res.lenght >= 0) {
+        if (res.tasks.length >= 0) {
           setTasks(res.tasks);
         }
       })
@@ -33,15 +50,20 @@ const AssignTime = ({ time }) => {
         <Text strong>Tus Tareas</Text>
       </Col>
       <Col span={24}>
-        <Select className="AssignTime_Select">
+        <Select className="AssignTime_Select" onChange={handleOption}>
           {tasks.length > 0 ? (
-            tasks.map((key, item) => {
-              return <Option key={key}>{item.name}</Option>;
+            tasks.map((item) => {
+              return <Option key={item._id}>{item.name}</Option>;
             })
           ) : (
             <Option>No tiene tareas</Option>
           )}
         </Select>
+      </Col>
+      <Col span={24}>
+        <Button type="primary" size="large" onClick={addTimeToTask}>
+          Asignar tiempo a la tarea
+        </Button>
       </Col>
     </Row>
   );
