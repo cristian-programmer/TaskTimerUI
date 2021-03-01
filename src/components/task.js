@@ -16,7 +16,7 @@ import { SaveOutlined } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
 const Task = () => {
-  const [task, setTasks] = useState([]);
+  const [tasks, setTasks] = useState([]);
   const [isVisible, setIsVisible] = useState(false);
   const [uploadTable, setUploadTable] = useState(true);
   const columns = [
@@ -41,10 +41,11 @@ const Task = () => {
 
   useEffect(() => {
     const idUser = getLocalStorage("idUser");
+
     get(`/v1/tasks/user/${idUser}`)
       .then((res) => {
-        console.log("Tasks ", res.task);
-        setTasks(res.task);
+        console.log("Tasks ", res.tasks);
+        setTasks(res.tasks);
       })
       .catch((error) => {
         console.log(error);
@@ -59,7 +60,8 @@ const Task = () => {
       const taskCreated = await post("/v1/tasks", { ...task, idUser });
       if (taskCreated.created === "created") {
         message.success("La tarea se creo correctamente.");
-        uploadTable(true);
+        setTasks((prev) => [...prev, task]);
+        closeModal();
       }
     } catch (error) {
       message.error("Error: ", error);
@@ -83,7 +85,7 @@ const Task = () => {
             size="large"
             columns={columns}
             pagination
-            dataSource={task}
+            dataSource={tasks}
           ></Table>
         </Col>
       </Row>
