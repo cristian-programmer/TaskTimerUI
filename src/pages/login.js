@@ -1,42 +1,26 @@
 import React from "react";
-import { Form, Input, Button, Checkbox, Typography, Card } from "antd";
+import { Form, Input, Button, Typography, Card } from "antd";
 import { useHistory } from "react-router-dom";
+import { post } from "../http/http";
 
 import "../styles/login.css";
 
 const { Title } = Typography;
 
-const layout = {
-  labelCol: {
-    span: 8,
-  },
-  wrapperCol: {
-    span: 16,
-  },
-};
-const tailLayout = {
-  wrapperCol: {
-    offset: 8,
-    span: 16,
-  },
-};
-
 const Login = () => {
   const history = useHistory();
 
-  const onFinish = (values) => {
-    console.log("Success:", values);
-    fetch("http://localhost/v1/users", {
-      body: JSON.stringify(values),
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        console.log(res);
-      });
-
-    history.push("/dash");
+  const onFinish = async (user) => {
+    console.log("Success:", user);
+    try {
+      const userLogged = await post("/v1/users/login", user);
+      if (userLogged.login) {
+        console.log(userLogged);
+        history.push("/dash");
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const onFinishFailed = (errorInfo) => {
