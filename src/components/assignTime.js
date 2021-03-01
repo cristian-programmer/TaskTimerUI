@@ -1,13 +1,26 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
+
+import { get } from "./../http/http";
+import { getLocalStorage } from "../http/localStorage";
 import { Select, Row, Col, Typography } from "antd";
 
 const { Option } = Select;
 const { Text } = Typography;
 
-import { get } from "./../http/http";
-import { getLocalStorage } from "../http/localStorage";
 const AssignTime = ({ time }) => {
-  useEffect(() => {}, []);
+  const [tasks, setTasks] = useState([]);
+  useEffect(() => {
+    const idUser = getLocalStorage("idUser");
+    get(`/v1/tasks/user/${idUser}`)
+      .then((res) => {
+        if (res.lenght >= 0) {
+          setTasks(res.tasks);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
   return (
     <Row gutter={[8, 8]}>
       <Col span={24}>
@@ -21,9 +34,13 @@ const AssignTime = ({ time }) => {
       </Col>
       <Col span={24}>
         <Select className="AssignTime_Select">
-          <Option>1</Option>
-          <Option>2</Option>
-          <Option>3</Option>
+          {tasks.length > 0 ? (
+            tasks.map((key, item) => {
+              return <Option key={key}>{item.name}</Option>;
+            })
+          ) : (
+            <Option>No tiene tareas</Option>
+          )}
         </Select>
       </Col>
     </Row>
