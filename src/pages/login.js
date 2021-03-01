@@ -2,6 +2,7 @@ import React from "react";
 import { Form, Input, Button, Typography, Card } from "antd";
 import { useHistory } from "react-router-dom";
 import { post } from "../http/http";
+import { addLocalStorage } from "./../http/localStorage";
 
 import "../styles/login.css";
 
@@ -15,7 +16,9 @@ const Login = () => {
     try {
       const userLogged = await post("/v1/users/login", user);
       if (userLogged.login) {
-        console.log(userLogged);
+        console.log("userLogged ", userLogged);
+        addLocalStorage("idUser", userLogged.id);
+        addLocalStorage("token", userLogged.token);
         history.push("/dash");
       }
     } catch (error) {
