@@ -1,0 +1,13 @@
+.Login{
+    padding: 200px;
+    width: auto;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+.Login_Button {
+    width: 100%;
+}
