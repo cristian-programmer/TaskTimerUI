@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { get, post } from "./../http/http";
-import { getLocalStorage } from "../http/localStorage";
+import { get, patch, post } from "./../http/http";
+import { getLocalStorage, addLocalStorage } from "../http/localStorage";
 import {
   Table,
   Row,
@@ -28,8 +28,9 @@ const Project = () => {
   const [idProject, setIdProject] = useState("");
   const [projects, setProjects] = useState([]);
   const [tasks, setTasks] = useState([]);
-  const [idTasks, setIdTasks] = useState([]);
+  const [idTask, setIdTask] = useState("");
   const [isVisible, setIsVisible] = useState(false);
+  const [isVisible2, setIsVisible2] = useState(false);
   const [isOpen, setOpen] = useState(false);
   const [run, setRun] = useState(true);
 
@@ -41,7 +42,7 @@ const Project = () => {
         return (
           <Checkbox
             onChange={(e) => {
-              handleCheck(e, recoder._id);
+              handleCheck(e, { name: recoder.name, id: recoder._id });
             }}
           ></Checkbox>
         );
@@ -70,10 +71,13 @@ const Project = () => {
     },
   ];
 
-  const handleCheck = (event, id) => {
+  const handleCheck = (event, project) => {
     if (event.target.checked) {
-      console.log("check", event.target.checked, "ID: ", id);
-      setIdProject(id);
+      console.log("check", event.target.checked, "ID: ", project);
+
+      addLocalStorage("nameProject", project.name);
+      addLocalStorage("idProject", project.id);
+      console.log(idProject);
     }
   };
 
@@ -81,18 +85,28 @@ const Project = () => {
     setIsVisible(true);
   };
 
-  const closeModal = () => {
-    setIsVisible(false);
-  };
-
-  const onClose = () => {
-    setOpen(false);
+  const showModal2 = () => {
+    getTasks();
+    setIsVisible2(true);
   };
 
   const showDrawel = (recoder) => {
     console.log(recoder);
     setOpen(true);
   };
+
+  const closeModal = () => {
+    setIsVisible(false);
+  };
+
+  const closeModal2 = () => {
+    setIsVisible2(false);
+  };
+
+  const onClose = () => {
+    setOpen(false);
+  };
+
   useEffect(() => {
     const idUser = getLocalStorage("idUser");
     if (run) {
@@ -108,7 +122,19 @@ const Project = () => {
     }
   }, [run]);
 
-  const getTasks = () => {};
+  const getTasks = () => {
+    const idUser = getLocalStorage("idUser");
+    get(`/v1/tasks/user/${idUser}`)
+      .then((res) => {
+        console.log(res);
+        if (res.tasks.length > 0) {
+          setTasks(res.tasks);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const onFinish = async (project) => {
     console.log("Success:", project);
@@ -127,7 +153,30 @@ const Project = () => {
     }
   };
 
-  const onFinishFailed = () => {};
+  const assignTasktoProject = () => {
+    const ids = {
+      idProject: getLocalStorage("idProject"),
+      idTask,
+    };
+
+    console.log(ids);
+
+    patch(`/v1/projects/${ids.idProject}/task`, { idTask: ids.idTask })
+      .then((res) => {
+        message.success(
+          "Se ha asignado la tarea con exito a el proyecto" +
+            getLocalStorage("nameProject")
+        );
+      })
+      .catch((error) => {
+        message.error("Error: ", error);
+      });
+  };
+
+  const handleSelectTasks = (id) => {
+    setIdTask(id);
+    console.log(id);
+  };
   return (
     <>
       <Row gutter={[8, 8]}>
@@ -142,7 +191,7 @@ const Project = () => {
             <Button
               type="default"
               icon={<AppstoreAddOutlined />}
-              onClick={showModal}
+              onClick={showModal2}
             >
               Asociar tareas a un proyecto
             </Button>
@@ -171,7 +220,6 @@ const Project = () => {
                 remember: true,
               }}
               onFinish={onFinish}
-              onFinishFailed={onFinishFailed}
             >
               <Form.Item
                 name="name"
@@ -214,42 +262,35 @@ const Project = () => {
 
       <Modal
         title="Asociar tareas a un proyecto"
-        visible={isVisible}
-        onCancel={closeModal}
+        visible={isVisible2}
+        onCancel={closeModal2}
         footer={null}
       >
         <Row>
+          <Col span={24}>
+            <Title level={4}>{getLocalStorage("nameProject")}</Title>
+          </Col>
           <Col span={24}>
             <Form
               name="basic"
               initialValues={{
                 remember: true,
               }}
-              onFinish={onFinish}
-              onFinishFailed={onFinishFailed}
             >
-              <Form.Item
-                name="name"
-                rules={[
-                  {
-                    required: true,
-                    message: "Ingresa el nombre del proyecto",
-                  },
-                ]}
-              >
-                <Input placeholder="Proyecto" />
-              </Form.Item>
-
-              <Form.Item
-                name="description"
-                rules={[
-                  {
-                    required: true,
-                    message: "Ingresa una descripción",
-                  },
-                ]}
-              >
-                <Input placeholder="Descripción" />
+              <Form.Item>
+                <Select
+                  style={{ width: "100%" }}
+                  placeholder="Seleciona las tareas"
+                  onChange={handleSelectTasks}
+                >
+                  {tasks.map((item) => {
+                    return (
+                      <Option value={item._id} key={item._id}>
+                        {item.name}
+                      </Option>
+                    );
+                  })}
+                </Select>
               </Form.Item>
 
               <Form.Item>
@@ -258,8 +299,9 @@ const Project = () => {
                   htmlType="submit"
                   size="middle"
                   className="Login_Button"
+                  onClick={assignTasktoProject}
                 >
-                  Crear Proyecto
+                  Asignar aqui
                 </Button>
               </Form.Item>
             </Form>
