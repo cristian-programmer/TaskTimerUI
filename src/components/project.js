@@ -33,7 +33,6 @@ const Project = () => {
   const [isVisible2, setIsVisible2] = useState(false);
   const [isOpen, setOpen] = useState(false);
   const [run, setRun] = useState(true);
-
   const columns = [
     {
       title: "Selecionar",
