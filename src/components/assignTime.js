@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-
+import { useHistory } from "react-router-dom";
 import { get, patch } from "./../http/http";
 import { getLocalStorage } from "../http/localStorage";
 import { Select, Row, Col, Typography, Button, message } from "antd";
@@ -10,12 +10,18 @@ const { Text } = Typography;
 const AssignTime = ({ time }) => {
   const [tasks, setTasks] = useState([]);
   const [idTask, setIdTask] = useState("");
+  const history = useHistory();
   const addTimeToTask = async () => {
     console.log(time, " ", idTask);
+    const timeTracking = {
+      timeTracking: time,
+    };
+    console.log(" ", timeTracking);
     try {
-      const res = await patch(`/v1/tasks/${idTask}`, time);
+      const res = await patch(`/v1/tasks/${idTask}`, timeTracking);
       if (res.updated === "updated") {
         message.success("Se ha añadido el tiempo tomado a la tarea");
+        history.location.pathname = "/dash";
       }
     } catch (error) {
       message.error("Error: ", error);
