@@ -21,7 +21,6 @@ const AssignTime = ({ time }) => {
       const res = await patch(`/v1/tasks/${idTask}`, timeTracking);
       if (res.updated === "updated") {
         message.success("Se ha añadido el tiempo tomado a la tarea");
-        history.location.pathname = "/dash";
       }
     } catch (error) {
       message.error("Error: ", error);
