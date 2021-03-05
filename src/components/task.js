@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { get, post } from "./../http/http";
 import { getLocalStorage } from "../http/localStorage";
+import { prettyFormat } from "../utils/utils";
 import {
   Table,
   Row,
@@ -11,6 +12,8 @@ import {
   Form,
   Input,
   message,
+  Card,
+  Tag,
 } from "antd";
 import { SaveOutlined } from "@ant-design/icons";
 
@@ -25,10 +28,26 @@ const Task = () => {
       dataIndex: "name",
     },
     { title: "Description", dataIndex: "description" },
-    // {
-    //   title: "Tiempo invertido",
-    //   dataIndex: "timeTracking",
-    // },
+
+    {
+      title: "Tiempo invertido",
+      dataIndex: "timeTracking",
+      render: (text, recoder) => {
+        if (recoder.timeTracking) {
+          console.log(recoder);
+          const { hours, minutes, seconds } = recoder.timeTracking;
+          const time = prettyFormat({ hours, minutes, seconds });
+          return <Tag color="green">{time}</Tag>;
+        } else {
+          return <span>tiempo no asignado</span>;
+        }
+      },
+    },
+
+    {
+      title: "creado",
+      dataIndex: "createdAt",
+    },
   ];
 
   const showModal = () => {
@@ -81,12 +100,14 @@ const Task = () => {
           </Button>
         </Col>
         <Col span={24}>
-          <Table
-            size="large"
-            columns={columns}
-            pagination
-            dataSource={tasks}
-          ></Table>
+          <Card>
+            <Table
+              size="large"
+              columns={columns}
+              pagination
+              dataSource={tasks}
+            ></Table>
+          </Card>
         </Col>
       </Row>
       <Modal
