@@ -47,6 +47,11 @@ const Task = () => {
     {
       title: "creado",
       dataIndex: "createdAt",
+      render: (text, recoder) => {
+        const date = new Date(recoder.createdAt);
+        const legibledate = date.toDateString();
+        return <span>{legibledate}</span>;
+      },
     },
   ];
 
