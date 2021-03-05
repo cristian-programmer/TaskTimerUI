@@ -1,4 +1,4 @@
-const SERVER_API = "http://ec2-18-207-142-206.compute-1.amazonaws.com";
+const SERVER_API = "https://app.apitasktimer.tk";
 
 export const post = (uri, data) => {
   return new Promise((resolve, reject) => {
