@@ -8,7 +8,7 @@ import {
 import "./../styles/timeTracking.css";
 
 import AssignTime from "./assignTime";
-
+import { prettyFormat } from "../utils/utils";
 const TimeTracking = () => {
   const [time, setTime] = useState({
     seconds: 0,
@@ -47,11 +47,11 @@ const TimeTracking = () => {
     }
   }, [isRunning]);
 
-  const prettyFormat = () => {
-    return `${time.hours > 9 ? time.hours : "0" + time.hours}:${
-      time.minutes > 9 ? time.minutes : "0" + time.minutes
-    }:${time.seconds > 9 ? time.seconds : "0" + time.seconds}`;
-  };
+  // const prettyFormat = () => {
+  //   return `${time.hours > 9 ? time.hours : "0" + time.hours}:${
+  //     time.minutes > 9 ? time.minutes : "0" + time.minutes
+  //   }:${time.seconds > 9 ? time.seconds : "0" + time.seconds}`;
+  // };
 
   const start = () => {
     setIsRunning((prevState) => !prevState);
@@ -70,7 +70,7 @@ const TimeTracking = () => {
       <PageHeader
         extra={[
           <span className="TimeTracking_Span">Tu tiempo</span>,
-          <span className="TimeTracking_Span">{prettyFormat()}</span>,
+          <span className="TimeTracking_Span">{prettyFormat(time)}</span>,
           <Button
             type="default"
             shape="circle"
