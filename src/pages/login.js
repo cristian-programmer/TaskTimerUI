@@ -26,20 +26,20 @@ const Login = () => {
     }
   };
 
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
+  const next = (errorInfo) => {
+    history.push("/signup");
   };
   return (
     <div className="Login">
       <Title level={3}>Task Timer App</Title>
       <Card>
+        <Title level={4}>Iniciar sección</Title>
         <Form
           name="basic"
           initialValues={{
             remember: true,
           }}
           onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
         >
           <Form.Item
             name="username"
@@ -73,6 +73,9 @@ const Login = () => {
               className="Login_Button"
             >
               Ingresar
+            </Button>
+            <Button type="link" onClick={next}>
+              Registrarse
             </Button>
           </Form.Item>
         </Form>
