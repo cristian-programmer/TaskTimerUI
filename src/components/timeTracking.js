@@ -43,6 +43,7 @@ const TimeTracking = () => {
 
       setIdInterval(id);
     } else {
+      console.log("unmount");
       clearInterval(idInterval);
     }
   }, [isRunning]);

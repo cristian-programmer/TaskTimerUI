@@ -90,7 +90,7 @@ const Project = () => {
   };
 
   const showDrawel = (recoder) => {
-    console.log(recoder);
+    console.log("recoder ", recoder);
     setOpen(true);
   };
 

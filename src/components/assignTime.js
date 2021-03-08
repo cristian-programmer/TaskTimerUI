@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
+
 import { get, patch } from "./../http/http";
 import { getLocalStorage } from "../http/localStorage";
 import { Select, Row, Col, Typography, Button, message } from "antd";
@@ -10,7 +10,7 @@ const { Text } = Typography;
 const AssignTime = ({ time }) => {
   const [tasks, setTasks] = useState([]);
   const [idTask, setIdTask] = useState("");
-  const history = useHistory();
+  
   const addTimeToTask = async () => {
     console.log(time, " ", idTask);
     const timeTracking = {
