@@ -13,16 +13,21 @@ const Register = () => {
     console.log("Success:", user);
     try {
       const userCreated = await post("/v1/users", user);
+      console.log(userCreated);
       if (userCreated.created) {
         message.success("Te has registrado correctamente");
         history.push("/dash");
-      } else {
-        message.success("El usuario con el que intentas registrarte ya existe");
+      } else if (userCreated.error) {
+        message.error("Ha ocurrido un error: ", userCreated.error);
       }
     } catch (error) {
       console.error(error);
-      message.success("Ha ocurrido un error al registrarte");
+      message.error("Ha ocurrido un error al registrarte");
     }
+  };
+
+  const back = () => {
+    history.push("/");
   };
   return (
     <Row>
@@ -61,7 +66,7 @@ const Register = () => {
                 <Input placeholder="Usuario" />
               </Form.Item>
               <Form.Item
-                name={["user", "email"]}
+                name={"email"}
                 rules={[
                   {
                     type: "email",
@@ -114,6 +119,9 @@ const Register = () => {
                   className="Login_Button"
                 >
                   Ingresar
+                </Button>
+                <Button type="link" onClick={back}>
+                  Volver al login
                 </Button>
               </Form.Item>
             </Form>
